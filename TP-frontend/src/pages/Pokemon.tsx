@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useFavorites } from "../hooks/useFavorites";
 
 interface PokemonType {
   type: { name: string };
@@ -24,6 +25,7 @@ interface PokemonDetail {
 }
 
 const Pokemon: React.FC = () => {
+  const { toggleFavorite, isFavorite } = useFavorites();
   const { nombre } = useParams<{ nombre?: string }>();
   const navigate = useNavigate();
 
@@ -70,7 +72,23 @@ const Pokemon: React.FC = () => {
       </button>
 
       <div className="card mx-auto shadow-sm" style={{ maxWidth: "400px" }}>
-        <h1 className="text-capitalize mb-4">{pokemon.name}</h1>
+        <h1 className="text-capitalize mb-3 d-flex ">
+          {pokemon?.name}
+          <button
+            className="btn btn-outline-danger ms-3"
+            style={{ fontSize: "1.5rem", padding: "0.2rem 0.5rem" }}
+            onClick={(e) => {
+              e.stopPropagation(); // ⚡ evita cualquier click accidental
+              if (pokemon)
+                toggleFavorite({
+                  name: pokemon.name,
+                  image: pokemon.sprites.front_default,
+                });
+            }}
+          >
+            {pokemon && isFavorite(pokemon.name) ? "❤️" : "🤍"}
+          </button>
+        </h1>
         <img
           src={image}
           alt={pokemon.name}
