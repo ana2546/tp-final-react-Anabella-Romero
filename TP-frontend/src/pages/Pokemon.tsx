@@ -71,8 +71,11 @@ const Pokemon: React.FC = () => {
         ← Volver
       </button>
 
-      <div className="card mx-auto shadow-sm" style={{ maxWidth: "400px" }}>
-        <h1 className="text-capitalize mb-3 d-flex ">
+      <div
+        className="card mx-auto shadow-sm text-center"
+        style={{ maxWidth: "400px" }}
+      >
+        <h1 className="text-capitalize mb-3 text-center">
           {pokemon?.name}
           <button
             className="btn btn-outline-danger ms-3"

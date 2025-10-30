@@ -21,14 +21,22 @@ interface Pokemon {
 }
 
 const ListaPokemones: React.FC = () => {
+  const [search, setSearch] = useState<string>("");
   const { toggleFavorite, isFavorite } = useFavorites();
   const [pokemones, setPokemones] = useState<Pokemon[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [offset, setOffset] = useState<number>(0); // control de página
+  const [offset, setOffset] = useState<number>(0);
   const [totalPokemones, setTotalPokemones] = useState<number>(0);
   const navigate = useNavigate();
   const limit = 20;
+  const isSearchMode = pokemones.length === 1 && search === "";
+  const handleReset = () => {
+    setSearch(""); // limpia el input
+    setOffset(0); // resetea
+    fetchPokemones(0); // recarga los primeros 20 Pokémon
+  };
 
+  // 🔹 Función para cargar los Pokémon
   const fetchPokemones = async (currentOffset: number) => {
     try {
       setLoading(true);
@@ -55,6 +63,29 @@ const ListaPokemones: React.FC = () => {
     }
   };
 
+  // 🔹 Buscador
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (search.trim() === "") return;
+
+    fetch(`https://pokeapi.co/api/v2/pokemon/${search.toLowerCase()}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Pokémon no encontrado");
+        return res.json();
+      })
+      .then((pokeData) => {
+        setPokemones([
+          {
+            name: pokeData.name,
+            image: pokeData.sprites.front_default,
+            url: `https://pokeapi.co/api/v2/pokemon/${pokeData.name}`,
+          },
+        ]);
+        setSearch(""); // limpia el input
+      })
+      .catch(() => alert("Pokémon no encontrado 😢"));
+  };
+
   useEffect(() => {
     fetchPokemones(offset);
   }, [offset]);
@@ -67,15 +98,38 @@ const ListaPokemones: React.FC = () => {
       <h1 className="text-center mb-4 bg-dark text-white p-3 rounded shadow">
         Lista de Pokemones
       </h1>
-
-      <Pagination
-        offset={offset}
-        limit={limit}
-        total={totalPokemones}
-        onPrevious={() => setOffset((prev) => Math.max(prev - limit, 0))}
-        onNext={() => setOffset((prev) => prev + limit)}
-      />
-
+      {/* Buscador con botón "Ver todos" */}
+      <form
+        className="d-flex justify-content-center mb-4"
+        onSubmit={handleSearch}
+      >
+        <input
+          type="text"
+          className="form-control w-50 me-2"
+          placeholder="Buscar Pokémon..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <button type="submit" className="btn btn-primary me-2">
+          Buscar
+        </button>
+        <button
+          type="button"
+          className="btn btn-secondary  "
+          onClick={handleReset} // vuelve a mostrar los primeros 20
+        >
+          🔁 Ver todos
+        </button>
+      </form>
+      {!isSearchMode && (
+        <Pagination
+          offset={offset}
+          limit={limit}
+          total={totalPokemones}
+          onPrevious={() => setOffset((prev) => Math.max(prev - limit, 0))}
+          onNext={() => setOffset((prev) => prev + limit)}
+        />
+      )}
       <div className="row">
         {pokemones.map((pokemon) => (
           <div key={pokemon.name} className="col-md-3 mb-4">
@@ -84,21 +138,16 @@ const ListaPokemones: React.FC = () => {
               style={{ cursor: "pointer" }}
               onClick={() => navigate(`/pokemon/${pokemon.name}`)}
             >
-              {/* Imagen del Pokémon */}
               <img
                 src={pokemon.image}
                 alt={pokemon.name}
                 className="card-img-top mx-auto mt-3"
                 style={{ width: "100px", height: "100px" }}
               />
-
-              {/* Nombre y botón de favorito */}
               <div className="card-body d-flex justify-content-between align-items-center">
                 <h5 className="card-title text-capitalize mb-0">
                   {pokemon.name}
                 </h5>
-
-                {/* ❤️ Botón de favoritos como button, sin input/label */}
                 <button
                   className="btn btn-outline-danger rounded-circle"
                   style={{
@@ -108,7 +157,7 @@ const ListaPokemones: React.FC = () => {
                     fontSize: "1.2rem",
                   }}
                   onClick={(e) => {
-                    e.stopPropagation(); // ⚡ Detiene el click de la card
+                    e.stopPropagation();
                     toggleFavorite({
                       name: pokemon.name,
                       image: pokemon.image,
@@ -122,14 +171,15 @@ const ListaPokemones: React.FC = () => {
           </div>
         ))}
       </div>
-
-      <Pagination
-        offset={offset}
-        limit={limit}
-        total={totalPokemones}
-        onPrevious={() => setOffset((prev) => Math.max(prev - limit, 0))}
-        onNext={() => setOffset((prev) => prev + limit)}
-      />
+      {!isSearchMode && (
+        <Pagination
+          offset={offset}
+          limit={limit}
+          total={totalPokemones}
+          onPrevious={() => setOffset((prev) => Math.max(prev - limit, 0))}
+          onNext={() => setOffset((prev) => prev + limit)}
+        />
+      )}
     </div>
   );
 };
