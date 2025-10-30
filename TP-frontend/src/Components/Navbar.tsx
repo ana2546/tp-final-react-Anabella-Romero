@@ -30,7 +30,7 @@ const Navbar: React.FC = () => {
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/List" className="nav-link">
+              <NavLink to="/ListaPokemones" className="nav-link">
                 Lista de Pokemones
               </NavLink>
             </li>
