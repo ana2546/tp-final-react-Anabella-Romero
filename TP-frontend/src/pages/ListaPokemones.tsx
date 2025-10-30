@@ -25,14 +25,14 @@ const ListaPokemones: React.FC = () => {
   const { toggleFavorite, isFavorite } = useFavorites();
   const [pokemones, setPokemones] = useState<Pokemon[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [offset, setOffset] = useState<number>(0); // control de página
+  const [offset, setOffset] = useState<number>(0);
   const [totalPokemones, setTotalPokemones] = useState<number>(0);
   const navigate = useNavigate();
   const limit = 20;
   const isSearchMode = pokemones.length === 1 && search === "";
   const handleReset = () => {
     setSearch(""); // limpia el input
-    setOffset(0); // resetea la paginación
+    setOffset(0); // resetea
     fetchPokemones(0); // recarga los primeros 20 Pokémon
   };
 
@@ -98,8 +98,7 @@ const ListaPokemones: React.FC = () => {
       <h1 className="text-center mb-4 bg-dark text-white p-3 rounded shadow">
         Lista de Pokemones
       </h1>
-
-      {/* 🔍 Buscador con botón "Ver todos" */}
+      {/* Buscador con botón "Ver todos" */}
       <form
         className="d-flex justify-content-center mb-4"
         onSubmit={handleSearch}
