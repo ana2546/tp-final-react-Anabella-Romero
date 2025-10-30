@@ -8,6 +8,8 @@ interface ApiPokemonItem {
 
 interface ApiResponse {
   results: ApiPokemonItem[];
+  next: string | null;
+  previous: string | null;
 }
 
 interface Pokemon {
@@ -19,39 +21,70 @@ interface Pokemon {
 const ListaPokemones: React.FC = () => {
   const [pokemones, setPokemones] = useState<Pokemon[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [offset, setOffset] = useState<number>(0); // control de página
+  const [totalPokemones, setTotalPokemones] = useState<number>(0);
   const navigate = useNavigate();
+  const limit = 20;
+
+  const fetchPokemones = async (currentOffset: number) => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `https://pokeapi.co/api/v2/pokemon?offset=${currentOffset}&limit=${limit}`
+      );
+      if (!response.ok) throw new Error("Error en la petición");
+      const data: ApiResponse & { count: number } = await response.json();
+
+      setTotalPokemones(data.count); // guardamos total de pokemones
+
+      const pokemonesConImagen: Pokemon[] = data.results.map((pokemon) => {
+        const parts = pokemon.url.split("/").filter(Boolean);
+        const id = parts[parts.length - 1];
+        const image = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+        return { ...pokemon, image };
+      });
+
+      setPokemones(pokemonesConImagen);
+    } catch (error) {
+      console.error("Error al obtener los Pokemones:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchPokemones = async () => {
-      try {
-        const response = await fetch("https://pokeapi.co/api/v2/pokemon?limit=20");
-        if (!response.ok) throw new Error("Error en la petición");
+    fetchPokemones(offset);
+  }, [offset]);
 
-        const data: ApiResponse = await response.json();
-
-        const pokemonesConImagen: Pokemon[] = data.results.map((pokemon) => {
-          const parts = pokemon.url.split("/").filter(Boolean);
-          const id = parts[parts.length - 1];
-          const image = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
-          return { ...pokemon, image };
-        });
-
-        setPokemones(pokemonesConImagen);
-      } catch (error) {
-        console.error("Error al obtener los Pokemones:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPokemones();
-  }, []);
-
-  if (loading) return <h3 className="text-center mt-5">Cargando Pokemones...</h3>;
+  if (loading)
+    return <h3 className="text-center mt-5">Cargando Pokemones...</h3>;
 
   return (
     <div className="container mt-4">
       <h1 className="text-center mb-4">Lista de Pokemones</h1>
+
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <button
+          className="btn btn-secondary"
+          onClick={() => setOffset((prev) => Math.max(prev - limit, 0))}
+          disabled={offset === 0}
+        >
+          ← Anterior
+        </button>
+
+        <span>
+          Mostrando Pokémon {offset + 1} -{" "}
+          {Math.min(offset + limit, totalPokemones)} de {totalPokemones}
+        </span>
+
+        <button
+          className="btn btn-primary"
+          onClick={() => setOffset((prev) => prev + limit)}
+          disabled={offset + limit >= totalPokemones}
+        >
+          Siguiente →
+        </button>
+      </div>
 
       <div className="row">
         {pokemones.map((pokemon) => (
@@ -80,4 +113,3 @@ const ListaPokemones: React.FC = () => {
 };
 
 export default ListaPokemones;
-
