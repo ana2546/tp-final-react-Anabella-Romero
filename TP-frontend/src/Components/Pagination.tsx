@@ -16,7 +16,7 @@ const Pagination: React.FC<PaginationProps> = ({
   onNext,
 }) => {
   return (
-    <div className="d-flex justify-content-between align-items-center mb-3">
+    <div className="d-flex justify-content-between align-items-center mb-3 bg-dark text-white p-3 rounded shadow">
       <button
         className="btn btn-secondary"
         onClick={onPrevious}
@@ -31,7 +31,7 @@ const Pagination: React.FC<PaginationProps> = ({
       </span>
 
       <button
-        className="btn btn-primary"
+        className="btn btn-secondary"
         onClick={onNext}
         disabled={offset + limit >= total}
       >

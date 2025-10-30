@@ -9,17 +9,21 @@ import Pokemon from "./pages/Pokemon";
 function App() {
   return (
     <>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/ListaPokemones" element={<List />} />
-        <Route path="/Pokemon/:nombre" element={<Pokemon />} />
-        <Route path="*" element={<h1>404 Not Found</h1>} />
-        <Route
-          path="/pokemon"
-          element={<Navigate to="/pokemon/pikachu" replace />}
-        />
-      </Routes>
+      <div className=" min-vh-100">
+        <Navbar />
+        <div className="container mt-4"></div>
+
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/ListaPokemones" element={<List />} />
+          <Route path="/Pokemon/:nombre" element={<Pokemon />} />
+          <Route path="*" element={<h1>404 Not Found</h1>} />
+          <Route
+            path="/pokemon"
+            element={<Navigate to="/pokemon/pikachu" replace />}
+          />
+        </Routes>
+      </div>
     </>
   );
 }

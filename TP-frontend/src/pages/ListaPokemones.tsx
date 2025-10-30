@@ -62,7 +62,9 @@ const ListaPokemones: React.FC = () => {
 
   return (
     <div className="container mt-4">
-      <h1 className="text-center mb-4">Lista de Pokemones</h1>
+      <h1 className="text-center mb-4 bg-dark text-white p-3 rounded shadow">
+        Lista de Pokemones
+      </h1>
 
       <Pagination
         offset={offset}
