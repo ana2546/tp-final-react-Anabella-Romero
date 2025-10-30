@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Pagination from "../Components/Pagination";
 import { useNavigate } from "react-router-dom";
+import { useFavorites } from "../hooks/useFavorites";
 
 interface ApiPokemonItem {
   name: string;
@@ -20,6 +21,7 @@ interface Pokemon {
 }
 
 const ListaPokemones: React.FC = () => {
+  const { toggleFavorite, isFavorite } = useFavorites();
   const [pokemones, setPokemones] = useState<Pokemon[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [offset, setOffset] = useState<number>(0); // control de página
@@ -76,21 +78,45 @@ const ListaPokemones: React.FC = () => {
 
       <div className="row">
         {pokemones.map((pokemon) => (
-          <div
-            key={pokemon.name}
-            className="col-12 col-sm-6 col-md-4 col-lg-3 mb-4"
-            onClick={() => navigate(`/pokemon/${pokemon.name}`)}
-            style={{ cursor: "pointer" }}
-          >
-            <div className="card text-center shadow-sm p-3">
+          <div key={pokemon.name} className="col-md-3 mb-4">
+            <div
+              className="card text-center shadow-sm position-relative"
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate(`/pokemon/${pokemon.name}`)}
+            >
+              {/* Imagen del Pokémon */}
               <img
                 src={pokemon.image}
                 alt={pokemon.name}
-                className="card-img-top mx-auto"
-                style={{ width: "120px", height: "120px" }}
+                className="card-img-top mx-auto mt-3"
+                style={{ width: "100px", height: "100px" }}
               />
-              <div className="card-body">
-                <h5 className="card-title text-capitalize">{pokemon.name}</h5>
+
+              {/* Nombre y botón de favorito */}
+              <div className="card-body d-flex justify-content-between align-items-center">
+                <h5 className="card-title text-capitalize mb-0">
+                  {pokemon.name}
+                </h5>
+
+                {/* ❤️ Botón de favoritos como button, sin input/label */}
+                <button
+                  className="btn btn-outline-danger rounded-circle"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    padding: 0,
+                    fontSize: "1.2rem",
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation(); // ⚡ Detiene el click de la card
+                    toggleFavorite({
+                      name: pokemon.name,
+                      image: pokemon.image,
+                    });
+                  }}
+                >
+                  {isFavorite(pokemon.name) ? "❤️" : "🤍"}
+                </button>
               </div>
             </div>
           </div>
