@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Pagination from "../Components/Pagination";
 import { useNavigate } from "react-router-dom";
 
 interface ApiPokemonItem {
@@ -63,28 +64,13 @@ const ListaPokemones: React.FC = () => {
     <div className="container mt-4">
       <h1 className="text-center mb-4">Lista de Pokemones</h1>
 
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <button
-          className="btn btn-secondary"
-          onClick={() => setOffset((prev) => Math.max(prev - limit, 0))}
-          disabled={offset === 0}
-        >
-          ← Anterior
-        </button>
-
-        <span>
-          Mostrando Pokémon {offset + 1} -{" "}
-          {Math.min(offset + limit, totalPokemones)} de {totalPokemones}
-        </span>
-
-        <button
-          className="btn btn-primary"
-          onClick={() => setOffset((prev) => prev + limit)}
-          disabled={offset + limit >= totalPokemones}
-        >
-          Siguiente →
-        </button>
-      </div>
+      <Pagination
+        offset={offset}
+        limit={limit}
+        total={totalPokemones}
+        onPrevious={() => setOffset((prev) => Math.max(prev - limit, 0))}
+        onNext={() => setOffset((prev) => prev + limit)}
+      />
 
       <div className="row">
         {pokemones.map((pokemon) => (
@@ -108,6 +94,14 @@ const ListaPokemones: React.FC = () => {
           </div>
         ))}
       </div>
+
+      <Pagination
+        offset={offset}
+        limit={limit}
+        total={totalPokemones}
+        onPrevious={() => setOffset((prev) => Math.max(prev - limit, 0))}
+        onNext={() => setOffset((prev) => prev + limit)}
+      />
     </div>
   );
 };

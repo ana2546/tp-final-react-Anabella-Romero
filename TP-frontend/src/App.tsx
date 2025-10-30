@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import "./App.css";
 
@@ -15,6 +15,10 @@ function App() {
         <Route path="/ListaPokemones" element={<List />} />
         <Route path="/Pokemon/:nombre" element={<Pokemon />} />
         <Route path="*" element={<h1>404 Not Found</h1>} />
+        <Route
+          path="/pokemon"
+          element={<Navigate to="/pokemon/pikachu" replace />}
+        />
       </Routes>
     </>
   );
