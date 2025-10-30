@@ -1,4 +1,3 @@
-// src/pages/Pokemon.tsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
@@ -12,8 +11,8 @@ interface PokemonAbility {
 
 interface PokemonDetail {
   name: string;
-  height: number; // en decímetros
-  weight: number; // en hectogramos
+  height: number;
+  weight: number;
   sprites: {
     front_default: string;
     other?: {
@@ -25,18 +24,21 @@ interface PokemonDetail {
 }
 
 const Pokemon: React.FC = () => {
-  const { nombre } = useParams<{ nombre: string }>();
-  const [pokemon, setPokemon] = useState<PokemonDetail | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { nombre } = useParams<{ nombre?: string }>();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!nombre) return;
+  const defaultPokemon = "pikachu"; // Pokémon por defecto
+  const pokemonName = nombre || defaultPokemon;
 
+  const [pokemon, setPokemon] = useState<PokemonDetail | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
     const fetchPokemon = async () => {
       try {
+        setLoading(true);
         const response = await fetch(
-          `https://pokeapi.co/api/v2/pokemon/${nombre}`
+          `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
         );
         if (!response.ok) throw new Error("Pokémon no encontrado");
         const data: PokemonDetail = await response.json();
@@ -50,14 +52,13 @@ const Pokemon: React.FC = () => {
     };
 
     fetchPokemon();
-  }, [nombre]);
+  }, [pokemonName]);
 
   if (loading)
     return <h3 className="text-center mt-5">Cargando detalles...</h3>;
   if (!pokemon)
     return <h3 className="text-center mt-5">Pokémon no encontrado 😢</h3>;
 
-  // Escoge la mejor imagen disponible
   const image =
     pokemon.sprites.other?.["official-artwork"]?.front_default ||
     pokemon.sprites.front_default;
