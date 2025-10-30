@@ -69,15 +69,14 @@ const Pokemon: React.FC = () => {
         ← Volver
       </button>
 
-      <h1 className="text-capitalize mb-4">{pokemon.name}</h1>
-      <img
-        src={image}
-        alt={pokemon.name}
-        style={{ width: "200px", height: "200px" }}
-        className="mb-3"
-      />
-
       <div className="card mx-auto shadow-sm" style={{ maxWidth: "400px" }}>
+        <h1 className="text-capitalize mb-4">{pokemon.name}</h1>
+        <img
+          src={image}
+          alt={pokemon.name}
+          style={{ width: "200px", height: "200px" }}
+          className="className=mb-3 mx-auto"
+        />
         <div className="card-body">
           <p>
             <strong>Peso:</strong> {pokemon.weight / 10} kg
